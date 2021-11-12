@@ -7,23 +7,28 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import com.compose.week2.ui.theme.LayoutsCodelabTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +36,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             LayoutsCodelabTheme {
                 // A surface container using the 'background' color from the theme
-                LayoutCodelab()
+                //LayoutCodelab()
+                //SimpleList()
+                //ImageList()
+                ScrollingList()
             }
         }
     }
@@ -109,6 +117,78 @@ fun PhotographerCard(modifier: Modifier = Modifier) {
 fun PhotographerCardPreview() {
     LayoutsCodelabTheme {
         PhotographerCard()
+    }
+}
+
+@OptIn(ExperimentalCoilApi::class)
+@Composable
+fun ImageListItem(index: Int) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            painter = rememberImagePainter(data = "https://developer.android.com/images/brand/Android_Robot.png"),
+            contentDescription = null,
+        modifier = Modifier.size(50.dp))
+        Spacer(Modifier.width(10.dp))
+        Text(text = "Item $index", style = MaterialTheme.typography.subtitle1)
+    }
+}
+
+@Composable
+fun ImageList() {
+    val scrollState = rememberLazyListState()
+
+    LazyColumn(state = scrollState) {
+        items(100) {
+            ImageListItem(index = it)
+        }
+    }
+}
+
+@Composable
+fun SimpleList() {
+    val scrollState = rememberLazyListState()
+
+    Column {
+        LazyColumn(state = scrollState) {
+            items(100) {
+                Text(text = "Item #$it")
+            }
+        }
+    }
+}
+
+@Composable
+fun ScrollingList() {
+    val listSize = 100
+    val scrollState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    Column {
+        Row {
+            Button(onClick = {
+                coroutineScope.launch {
+                    // 0 is the first item index
+                    scrollState.animateScrollToItem(0)
+                }
+            }) {
+                Text("Scroll to the top")
+            }
+
+            Button(onClick = {
+                coroutineScope.launch {
+                    // listSize - 1 is the last index of the list
+                    scrollState.animateScrollToItem(listSize - 1)
+                }
+            }) {
+                Text("Scroll to the end")
+            }
+        }
+
+        LazyColumn(state = scrollState) {
+            items(listSize) {
+                ImageListItem(it)
+            }
+        }
     }
 }
 
