@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.codelab.theming.data
+package com.codelab.week_3_1_theme.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Immutable
-import com.codelab.theming.R
+import com.codelab.week_3_1_theme.R
 
 @Immutable
 data class Post(
@@ -46,7 +46,7 @@ data class PostAuthor(
 )
 
 /**
- * A fake repo returning sample datas
+ * A fake repo returning sample data
  */
 object PostRepo {
     fun getPosts(): List<Post> = posts
